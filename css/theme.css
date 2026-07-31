@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+/* ============================================================
+   ASSETRON Platform — "Gateway" design system
+   Fiori-inspired data-dense enterprise look, distinct visual identity.
+   Pure CSS — no framework dependency, safe for static hosting.
+   ============================================================ */
+:root {
+  --ac-primary: #2563EB;
+  --ac-primary-hover: #1D4ED8;
+  --ac-on-primary: #FFFFFF;
+  --ac-secondary: #3B82F6;
+  --ac-accent: #059669;
+  --ac-accent-hover: #047857;
+
+  --ac-background: #F8FAFC;
+  --ac-surface: #FFFFFF;
+  --ac-surface-raised: #FFFFFF;
+  --ac-muted: #F1F5FD;
+  --ac-border: #E4ECFC;
+  --ac-foreground: #0F172A;
+  --ac-foreground-muted: #5B6B85;
+
+  --ac-destructive: #DC2626;
+  --ac-destructive-bg: #FEF2F2;
+  --ac-warning: #D97706;
+  --ac-warning-bg: #FFFBEB;
+  --ac-success: #059669;
+  --ac-success-bg: #ECFDF5;
+  --ac-info: #2563EB;
+  --ac-info-bg: #EFF6FF;
+  --ac-ring: #2563EB;
+
+  --ac-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ac-font-mono: 'Cascadia Code', 'Consolas', ui-monospace, monospace;
+
+  --ac-space-1: 4px;
+  --ac-space-2: 8px;
+  --ac-space-3: 12px;
+  --ac-space-4: 16px;
+  --ac-space-5: 24px;
+  --ac-space-6: 32px;
+
+  --ac-radius-sm: 6px;
+  --ac-radius-md: 10px;
+  --ac-radius-lg: 14px;
+  --ac-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ac-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --ac-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+  --ac-topbar-height: 52px;
+  --ac-sidenav-width: 248px;
+  --ac-sidenav-collapsed: 64px;
+
+  --ac-transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="dark"] {
+  --ac-primary: #3B82F6;
+  --ac-primary-hover: #60A5FA;
+  --ac-on-primary: #0B1220;
+  --ac-secondary: #60A5FA;
+  --ac-accent: #10B981;
+  --ac-accent-hover: #34D399;
+
+  --ac-background: #0B1220;
+  --ac-surface: #121B2E;
+  --ac-surface-raised: #16213A;
+  --ac-muted: #182541;
+  --ac-border: #24314F;
+  --ac-foreground: #E8EDF7;
+  --ac-foreground-muted: #93A2C2;
+
+  --ac-destructive: #F87171;
+  --ac-destructive-bg: #2A1416;
+  --ac-warning: #FBBF24;
+  --ac-warning-bg: #2A2110;
+  --ac-success: #34D399;
+  --ac-success-bg: #0F241D;
+  --ac-info: #60A5FA;
+  --ac-info-bg: #101E33;
+  --ac-ring: #60A5FA;
+
+  --ac-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ac-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --ac-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ac-primary: #3B82F6; --ac-primary-hover: #60A5FA; --ac-on-primary: #0B1220;
+    --ac-secondary: #60A5FA; --ac-accent: #10B981; --ac-accent-hover: #34D399;
+    --ac-background: #0B1220; --ac-surface: #121B2E; --ac-surface-raised: #16213A;
+    --ac-muted: #182541; --ac-border: #24314F; --ac-foreground: #E8EDF7; --ac-foreground-muted: #93A2C2;
+    --ac-destructive: #F87171; --ac-destructive-bg: #2A1416;
+    --ac-warning: #FBBF24; --ac-warning-bg: #2A2110;
+    --ac-success: #34D399; --ac-success-bg: #0F241D;
+    --ac-info: #60A5FA; --ac-info-bg: #101E33; --ac-ring: #60A5FA;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--ac-font);
+  background: var(--ac-background);
+  color: var(--ac-foreground);
+  font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 700; margin: 0 0 var(--ac-space-2) 0; letter-spacing: -0.01em; }
+h1 { font-size: 26px; } h2 { font-size: 21px; } h3 { font-size: 17px; }
+p { margin: 0 0 var(--ac-space-3) 0; }
+a { color: var(--ac-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: var(--ac-primary); color: var(--ac-on-primary); }
+*:focus-visible { outline: 2px solid var(--ac-ring); outline-offset: 2px; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ac-border); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ac-foreground-muted); }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
