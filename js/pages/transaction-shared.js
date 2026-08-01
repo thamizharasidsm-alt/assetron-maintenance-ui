@@ -13,7 +13,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
     const rows = [...Store.all(collection)].sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
     container.innerHTML = `
       <div class="ac-page-header">
-        <div><h1>${icon(moduleIcon, 22)} ${moduleLabel}</h1><p class="ac-page-subtitle">${rows.length} transaction(s) recorded.</p></div>
+        <div><h1>${iconChip(moduleIcon, 20, 34)} ${moduleLabel}</h1><p class="ac-page-subtitle">${rows.length} transaction(s) recorded.</p></div>
         <a class="ac-btn ac-btn--primary" href="#${basePath}/new">${icon("plus", 16)} New ${moduleLabel}</a>
       </div>
       <div class="ac-table-wrap"><table class="ac-table">
@@ -63,7 +63,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
       container.innerHTML = `
         <div class="ac-breadcrumb"><a href="#${basePath}">${moduleLabel}</a> ${icon("chevronright", 12)} <span>${isNew ? "New" : record.docNumber}</span></div>
         <div class="ac-page-header">
-          <div><h1>${icon(moduleIcon, 22)} ${isNew ? `New ${moduleLabel}` : record.docNumber}</h1>
+          <div><h1>${iconChip(moduleIcon, 20, 34)} ${isNew ? `New ${moduleLabel}` : record.docNumber}</h1>
           ${record ? `<p class="ac-page-subtitle">${badge(record.status === "PendingApproval" ? "Pending" : record.status)} ${!editable ? "· read-only" : ""}</p>` : ""}</div>
         </div>
         ${record && record.status === "Rejected" ? `<div class="ac-card" style="border-color:var(--ac-destructive);margin-bottom:var(--ac-space-4);"><strong>${icon("alerttriangle", 15)} Rejected by ${empName(record.approverId)}:</strong> ${record.approvalRemarks || "No reason given."}${isOwner ? " — edit and resubmit below." : ""}</div>` : ""}
@@ -72,11 +72,11 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
           <div class="ac-form-grid">
             <div class="ac-field"><label>Equipment *</label><select class="ac-select" id="f-equipment" ${readonlyAttr} required><option value="">Select…</option>${equipmentOptions}</select></div>
             <div class="ac-field"><label>Performed Date *</label><input class="ac-input" type="date" id="f-date" value="${record?.performedDate || todayStr()}" ${readonlyAttr} required/></div>
-            <div class="ac-field"><label>Frequency (for next PM) *</label><select class="ac-select" id="f-freq" ${readonlyAttr} required>
+            <div class="ac-field"><label>Frequency (for next PM)</label><select class="ac-select" id="f-freq" disabled required>
               ${FREQUENCY_OPTIONS.map((f) => `<option value="${f.value}" ${record?.frequency === f.value ? "selected" : ""}>${f.label}</option>`).join("")}
-            </select></div>
+            </select><span class="ac-field__help">Set from the equipment's Default PM Frequency — not editable here.</span></div>
             <div class="ac-field" id="f-customdays-wrap" style="display:${record?.frequency === "Custom" ? "flex" : "none"};">
-              <label>Custom Interval (days)</label><input class="ac-input" type="number" id="f-customdays" min="1" value="${record?.customDays || ""}" ${readonlyAttr}/>
+              <label>Custom Interval (days)</label><input class="ac-input" type="number" id="f-customdays" min="1" value="${record?.customDays || ""}" disabled/>
             </div>
           </div>
           <div class="ac-info-box" style="margin-top:var(--ac-space-2);" id="last-performed-box"></div>
@@ -102,8 +102,8 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
         ${editable ? `
           <div class="ac-modal__footer" style="border-top:1px solid var(--ac-border);margin-top:var(--ac-space-4);padding-top:var(--ac-space-4);">
             <a class="ac-btn ac-btn--secondary" href="#${basePath}">Cancel</a>
-            <button type="button" class="ac-btn ac-btn--secondary" id="btn-save-draft">${icon("save", 16)} Save as Draft</button>
-            <button type="button" class="ac-btn ac-btn--primary" id="btn-save-submit">${icon("checkcircle", 16)} Save &amp; Send for Approval</button>
+            <button type="button" class="ac-btn ac-btn--secondary" id="btn-save-draft">${icon("save", 16)} Create as Draft</button>
+            <button type="button" class="ac-btn ac-btn--primary" id="btn-save-submit">${icon("checkcircle", 16)} Create &amp; Send for Approval</button>
           </div>` : ""}
       `;
 
@@ -162,6 +162,14 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
       refreshEquipmentDependent();
 
       function refreshEquipmentDependent() {
+        if (isNew) {
+          const equipment = selectedEquipmentId ? Store.find("equipment", selectedEquipmentId) : null;
+          const freqEl = container.querySelector("#f-freq");
+          const customEl = container.querySelector("#f-customdays");
+          freqEl.value = equipment?.frequencyDefault || "";
+          if (equipment?.frequencyDefault === "Custom") customEl.value = equipment.customDaysDefault ?? "";
+        }
+
         const lastBox = container.querySelector("#last-performed-box");
         const last = selectedEquipmentId ? Store.lastPerformed(collection, selectedEquipmentId, record?.id) : null;
         if (selectedEquipmentId) {
@@ -177,7 +185,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
         const items = selectedEquipmentId ? Store.checklistFor(selectedEquipmentId) : [];
         const existingChecklist = record?.checklist || [];
         clPanel.innerHTML = items.length === 0
-          ? `<p class="ac-muted-text">${selectedEquipmentId ? "No checklist items mapped to this equipment — set them up in Checklist Mapping." : "Select an equipment to load its checklist."}</p>`
+          ? `<p class="ac-muted-text">${selectedEquipmentId ? "No checklist items set up for this equipment — add them in Equipment Master." : "Select an equipment to load its checklist."}</p>`
           : items.map((i) => {
             const existing = existingChecklist.find((c) => c.checklistItemId === i.id);
             return `<div class="ac-checklist-row" data-checklist-item="${i.id}">
@@ -252,15 +260,20 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
           updatedAt: nowIso,
         };
 
+        const approverName = payload.approverId ? Store.find("employees", payload.approverId)?.name : null;
+        const submitMessage = targetStatus === "PendingApproval"
+          ? (approverName ? `Submitted successfully. Approval sent to ${approverName}.` : "Submitted successfully.")
+          : "Saved as draft.";
+
         if (record) {
           Store.update(collection, record.id, payload);
-          toast(targetStatus === "PendingApproval" ? "Resubmitted for approval" : "Saved as draft", "success");
+          successAlert(submitMessage);
           location.hash = `${basePath}/${record.id}`;
         } else {
           payload.docNumber = Store.nextDocNumber(docPrefix);
           payload.createdAt = nowIso;
           const created = Store.insert(collection, payload);
-          toast(targetStatus === "PendingApproval" ? "Sent for approval" : "Saved as draft", "success");
+          successAlert(submitMessage);
           location.hash = `${basePath}/${created.id}`;
         }
       }

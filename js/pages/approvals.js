@@ -10,7 +10,7 @@
       const items = Store.pendingApprovalsFor(user.id);
       container.innerHTML = `
         <div class="ac-page-header">
-          <div><h1>${icon("checkcircle", 22)} Pending Approvals</h1><p class="ac-page-subtitle">Work Orders and Calibrations routed to ${user.name} for approval. Switch user (top-right avatar) to preview as a different approver.</p></div>
+          <div><h1>${iconChip("checkcircle", 20, 34)} Pending Approvals</h1><p class="ac-page-subtitle">Work Orders and Calibrations routed to ${user.name} for approval. Switch user (top-right avatar) to preview as a different approver.</p></div>
         </div>
         <div class="ac-table-wrap"><table class="ac-table">
           <thead><tr><th>Doc No.</th><th>Module</th><th>Equipment</th><th>Performed By</th><th>Performed Date</th><th>Frequency</th><th>Submitted</th><th></th></tr></thead>
@@ -55,7 +55,6 @@
           <div class="ac-field ac-field--full"><label>Reason for Rejection *</label><textarea class="ac-textarea" name="reason" required placeholder="Explain what needs to be corrected…"></textarea></div>
           <div class="ac-modal__footer"><button type="button" class="ac-btn ac-btn--secondary" data-close-modal>Cancel</button><button type="submit" class="ac-btn ac-btn--destructive">${icon("x", 16)} Reject</button></div>
         </form>`);
-      overlay.querySelector("[data-close-modal]").addEventListener("click", closeModal);
       overlay.querySelector("#reject-form").addEventListener("submit", (e) => {
         e.preventDefault();
         const reason = new FormData(e.target).get("reason");

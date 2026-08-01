@@ -10,6 +10,7 @@ const NAV_GROUPS = [
     label: "Organization",
     items: [
       { route: "#/org/company-codes", label: "Company Codes", icon: "briefcase" },
+      { route: "#/org/departments", label: "Department Master", icon: "shield" },
       { route: "#/org/plants", label: "Plants", icon: "factory" },
       { route: "#/org/locations", label: "Locations", icon: "mappin" },
     ],
@@ -20,8 +21,6 @@ const NAV_GROUPS = [
       { route: "#/masters/equipment", label: "Equipment Master", icon: "grid" },
       { route: "#/masters/spares", label: "Spare Master", icon: "package" },
       { route: "#/masters/spare-categories", label: "Spare Category Master", icon: "layers" },
-      { route: "#/masters/checklist", label: "Checklist Master", icon: "clipboardcheck" },
-      { route: "#/masters/checklist-mapping", label: "Checklist Mapping", icon: "gitcompare" },
       { route: "#/masters/employees", label: "Employee Master", icon: "users" },
       { route: "#/masters/approvers", label: "User Approver Master", icon: "usercheck" },
     ],

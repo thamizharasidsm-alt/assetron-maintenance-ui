@@ -67,12 +67,21 @@ function openModal(title, bodyHtml, { size = "" } = {}) {
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
-  overlay.querySelector("[data-close-modal]").addEventListener("click", closeModal);
+  overlay.querySelectorAll("[data-close-modal]").forEach((btn) => btn.addEventListener("click", closeModal));
   return overlay;
 }
 function closeModal() {
   const existing = document.getElementById("ac-modal-overlay");
   if (existing) existing.remove();
+}
+
+// ---- Success popup (SweetAlert2) ----
+function successAlert(message) {
+  if (window.Swal) {
+    Swal.fire({ icon: "success", title: "Success", text: message, confirmButtonColor: "#2563EB" });
+  } else {
+    toast(message, "success");
+  }
 }
 
 // ---- Generic field-config-driven CRUD page ----
@@ -83,7 +92,7 @@ function renderCrudPage({ title, subtitle, collection, fields, columns, icon: pa
   return `
     <div class="ac-page-header">
       <div>
-        <h1>${icon(pageIcon, 22)} ${title}</h1>
+        <h1>${iconChip(pageIcon, 20, 34)} ${title}</h1>
         ${subtitle ? `<p class="ac-page-subtitle">${subtitle}</p>` : ""}
       </div>
       <div class="ac-page-header__actions">
@@ -311,22 +320,22 @@ function printDocument(title, bodyHtml) {
 }
 
 function showCrudForm({ collection, fields, title, record }) {
+  const isEdit = !!(record && record.id);
   const overlay = openModal(title, `
     <form id="crud-form">
       <div class="ac-form-grid">${fieldFormHtml(fields, record || {})}</div>
       <div class="ac-modal__footer">
         <button type="button" class="ac-btn ac-btn--secondary" data-close-modal>Cancel</button>
-        <button type="submit" class="ac-btn ac-btn--primary">${icon("save", 16)} Save</button>
+        <button type="submit" class="ac-btn ac-btn--primary">${icon("save", 16)} ${isEdit ? "Update" : "Create"}</button>
       </div>
     </form>`);
-  overlay.querySelector("[data-close-modal]").addEventListener("click", closeModal);
   overlay.querySelector("#crud-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const data = readForm(e.target, fields);
-    if (record && record.id) Store.update(collection, record.id, data);
+    if (isEdit) Store.update(collection, record.id, data);
     else Store.insert(collection, data);
     closeModal();
-    toast("Saved successfully", "success");
+    successAlert(isEdit ? "Updated successfully." : "Created successfully.");
     renderRoute();
   });
 }
@@ -336,6 +345,7 @@ window.fmtDate = fmtDate;
 window.fmtDateTime = fmtDateTime;
 window.badge = badge;
 window.toast = toast;
+window.successAlert = successAlert;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.renderCrudPage = renderCrudPage;

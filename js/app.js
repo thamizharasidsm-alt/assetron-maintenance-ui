@@ -143,7 +143,7 @@ function renderSidenav() {
       <div class="ac-navgroup__label">${g.label}</div>
       ${g.items.map((item) => `
         <a href="${item.route}" class="ac-navitem ${item.route === currentHash ? "active" : ""}">
-          ${icon(item.icon, 18)}<span>${item.label}</span>
+          ${iconChip(item.icon, 15, 26)}<span>${item.label}</span>
         </a>`).join("")}
     </div>`).join("");
 }

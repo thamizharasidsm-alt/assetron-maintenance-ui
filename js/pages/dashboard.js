@@ -1,13 +1,12 @@
 (function () {
   const TILES = [
     { route: "#/org/company-codes", label: "Company Codes", icon: "briefcase", collection: "companyCodes" },
+    { route: "#/org/departments", label: "Department Master", icon: "shield", collection: "departments" },
     { route: "#/org/plants", label: "Plants", icon: "factory", collection: "plants" },
     { route: "#/org/locations", label: "Locations", icon: "mappin", collection: "locations" },
     { route: "#/masters/equipment", label: "Equipment Master", icon: "grid", collection: "equipment" },
     { route: "#/masters/spares", label: "Spare Master", icon: "package", collection: "spares" },
     { route: "#/masters/spare-categories", label: "Spare Category Master", icon: "layers", collection: "spareCategories" },
-    { route: "#/masters/checklist", label: "Checklist Master", icon: "clipboardcheck", collection: "checklistItems" },
-    { route: "#/masters/checklist-mapping", label: "Checklist Mapping", icon: "gitcompare" },
     { route: "#/masters/employees", label: "Employee Master", icon: "users", collection: "employees" },
     { route: "#/masters/approvers", label: "User Approver Master", icon: "usercheck", collection: "approverMatrix" },
     { route: "#/workorder", label: "Work Order", icon: "settings", collection: "workOrders" },
@@ -30,7 +29,7 @@
 
     container.innerHTML = `
       <div class="ac-page-header">
-        <div><h1>${icon("home", 22)} Dashboard</h1><p class="ac-page-subtitle">Signed in as <strong>${user.name}</strong> (${user.role}). This is a self-contained demo — all data lives in your browser (localStorage).</p></div>
+        <div><h1>${iconChip("home", 20, 34)} Dashboard</h1><p class="ac-page-subtitle">Signed in as <strong>${user.name}</strong> (${user.role}). This is a self-contained demo — all data lives in your browser (localStorage).</p></div>
       </div>
       <div class="ac-kpi-grid">
         <div class="ac-kpi-tile" data-route="#/workorder"><div class="ac-kpi-tile__label">Open Work Orders</div><div class="ac-kpi-tile__value">${woOpen}</div></div>
@@ -50,7 +49,7 @@
         <div class="ac-tile-grid">
           ${TILES.map((t) => `
             <a class="ac-tile" href="${t.route}">
-              <div class="ac-tile__icon">${icon(t.icon, 19)}</div>
+              <div class="ac-tile__icon" style="background:${iconColor(t.icon)}22;color:${iconColor(t.icon)};">${icon(t.icon, 19)}</div>
               <div><div class="ac-tile__title">${t.label}</div>${t.collection ? `<div class="ac-tile__count">${Store.all(t.collection).length}</div>` : ""}</div>
             </a>`).join("")}
         </div>

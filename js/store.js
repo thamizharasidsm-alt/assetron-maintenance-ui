@@ -33,6 +33,12 @@ function computeNextDate(performedDate, frequency, customDays) {
 }
 
 function seedData() {
+  const departments = [
+    { id: "dept-fac", code: "FAC", name: "Facilities" },
+    { id: "dept-eng", code: "ENG", name: "Engineering" },
+    { id: "dept-qa", code: "QA", name: "Quality Assurance" },
+  ];
+
   const companyCodes = [
     { id: "cc1", code: "1000", name: "Nexora Technologies Pvt Ltd", city: "Bengaluru", country: "IN" },
   ];
@@ -92,41 +98,26 @@ function seedData() {
   ];
 
   const checklistItems = [
-    { id: "cl1", text: "Check refrigerant level", category: "HVAC" },
-    { id: "cl2", text: "Clean / replace air filter", category: "HVAC" },
-    { id: "cl3", text: "Inspect condenser coil for dust", category: "HVAC" },
-    { id: "cl4", text: "Check thermostat accuracy", category: "HVAC" },
-    { id: "cl5", text: "Inspect electrical connections", category: "General" },
-    { id: "cl6", text: "Check engine oil level", category: "Electrical" },
-    { id: "cl7", text: "Inspect battery terminals", category: "Electrical" },
-    { id: "cl8", text: "Test auto-start function", category: "Electrical" },
-    { id: "cl9", text: "Check pump seal for leakage", category: "Mechanical" },
-    { id: "cl10", text: "Verify vibration levels", category: "Mechanical" },
-    { id: "cl11", text: "Verify reading against reference standard", category: "Instrumentation" },
-    { id: "cl12", text: "Check calibration certificate validity", category: "Instrumentation" },
-  ];
-
-  const checklistMapping = [
-    { id: "cm1", equipmentId: "eq-ac1", checklistItemId: "cl1" },
-    { id: "cm2", equipmentId: "eq-ac1", checklistItemId: "cl2" },
-    { id: "cm3", equipmentId: "eq-ac1", checklistItemId: "cl3" },
-    { id: "cm4", equipmentId: "eq-ac1", checklistItemId: "cl4" },
-    { id: "cm5", equipmentId: "eq-ac1", checklistItemId: "cl5" },
-    { id: "cm6", equipmentId: "eq-dg1", checklistItemId: "cl6" },
-    { id: "cm7", equipmentId: "eq-dg1", checklistItemId: "cl7" },
-    { id: "cm8", equipmentId: "eq-dg1", checklistItemId: "cl8" },
-    { id: "cm9", equipmentId: "eq-dg1", checklistItemId: "cl5" },
-    { id: "cm10", equipmentId: "eq-pump1", checklistItemId: "cl9" },
-    { id: "cm11", equipmentId: "eq-pump1", checklistItemId: "cl10" },
-    { id: "cm12", equipmentId: "eq-gauge1", checklistItemId: "cl11" },
-    { id: "cm13", equipmentId: "eq-gauge1", checklistItemId: "cl12" },
+    { id: "cl1", text: "Check refrigerant level", category: "HVAC", equipmentId: "eq-ac1" },
+    { id: "cl2", text: "Clean / replace air filter", category: "HVAC", equipmentId: "eq-ac1" },
+    { id: "cl3", text: "Inspect condenser coil for dust", category: "HVAC", equipmentId: "eq-ac1" },
+    { id: "cl4", text: "Check thermostat accuracy", category: "HVAC", equipmentId: "eq-ac1" },
+    { id: "cl5", text: "Inspect electrical connections", category: "General", equipmentId: "eq-ac1" },
+    { id: "cl6", text: "Check engine oil level", category: "Electrical", equipmentId: "eq-dg1" },
+    { id: "cl7", text: "Inspect battery terminals", category: "Electrical", equipmentId: "eq-dg1" },
+    { id: "cl8", text: "Test auto-start function", category: "Electrical", equipmentId: "eq-dg1" },
+    { id: "cl9", text: "Inspect electrical connections", category: "General", equipmentId: "eq-dg1" },
+    { id: "cl10", text: "Check pump seal for leakage", category: "Mechanical", equipmentId: "eq-pump1" },
+    { id: "cl11", text: "Verify vibration levels", category: "Mechanical", equipmentId: "eq-pump1" },
+    { id: "cl12", text: "Verify reading against reference standard", category: "Instrumentation", equipmentId: "eq-gauge1" },
+    { id: "cl13", text: "Check calibration certificate validity", category: "Instrumentation", equipmentId: "eq-gauge1" },
   ];
 
   const employees = [
-    { id: "emp-admin", empCode: "EMP-0001", name: "System Administrator", email: "admin@assetron.demo", role: "Admin", claims: ["ManageMasters", "ApproveAll"] },
-    { id: "emp-arjun", empCode: "EMP-0002", name: "Arjun Mehta", email: "arjun.mehta@assetron.demo", role: "Technician", claims: ["CreateWorkOrder", "CreateCalibration"] },
-    { id: "emp-priya", empCode: "EMP-0003", name: "Priya Sharma", email: "priya.sharma@assetron.demo", role: "Technician", claims: ["CreateWorkOrder", "CreateCalibration"] },
-    { id: "emp-kavita", empCode: "EMP-0004", name: "Kavita Rao", email: "kavita.rao@assetron.demo", role: "Approver", claims: ["Approve"] },
+    { id: "emp-admin", empCode: "EMP-0001", name: "System Administrator", email: "admin@assetron.demo", role: "Admin", claims: ["ManageMasters", "ApproveAll"], departmentId: "dept-eng", plantId: "pl1", locationId: "loc-room-a302" },
+    { id: "emp-arjun", empCode: "EMP-0002", name: "Arjun Mehta", email: "arjun.mehta@assetron.demo", role: "Technician", claims: ["CreateWorkOrder", "CreateCalibration"], departmentId: "dept-fac", plantId: "pl1", locationId: "loc-room-a302" },
+    { id: "emp-priya", empCode: "EMP-0003", name: "Priya Sharma", email: "priya.sharma@assetron.demo", role: "Technician", claims: ["CreateWorkOrder", "CreateCalibration"], departmentId: "dept-fac", plantId: "pl1", locationId: "loc-terrace-dg-room" },
+    { id: "emp-kavita", empCode: "EMP-0004", name: "Kavita Rao", email: "kavita.rao@assetron.demo", role: "Approver", claims: ["Approve"], departmentId: "dept-qa", plantId: "pl1", locationId: "loc-store-room" },
   ];
 
   const approverMatrix = [
@@ -174,7 +165,7 @@ function seedData() {
         { checklistItemId: "cl6", performed: "Yes", remarks: "Topped up to full mark" },
         { checklistItemId: "cl7", performed: "Yes", remarks: "Clean, tightened" },
         { checklistItemId: "cl8", performed: "No", remarks: "Auto-start relay delayed by 3s — flagged for repair" },
-        { checklistItemId: "cl5", performed: "Yes", remarks: "OK" },
+        { checklistItemId: "cl9", performed: "Yes", remarks: "OK" },
       ],
       qna: qnaTemplate(),
       status: "PendingApproval", approverId: "emp-kavita", approvalRemarks: "", approvedDate: null,
@@ -188,8 +179,8 @@ function seedData() {
       spares: [],
       frequency: "Yearly", customDays: null, nextScheduledDate: "2027-03-01",
       checklist: [
-        { checklistItemId: "cl11", performed: "Yes", remarks: "Within ±1% tolerance" },
-        { checklistItemId: "cl12", performed: "Yes", remarks: "Certificate valid till 2027-03-01" },
+        { checklistItemId: "cl12", performed: "Yes", remarks: "Within ±1% tolerance" },
+        { checklistItemId: "cl13", performed: "Yes", remarks: "Certificate valid till 2027-03-01" },
       ],
       qna: qnaTemplate(),
       status: "Approved", approverId: "emp-kavita", approvalRemarks: "Certificate verified, approved.", approvedDate: "2026-03-02",
@@ -198,8 +189,8 @@ function seedData() {
   ];
 
   return {
-    companyCodes, plants, locations,
-    equipmentGroups, equipment, spareCategories, spares, checklistItems, checklistMapping,
+    departments, companyCodes, plants, locations,
+    equipmentGroups, equipment, spareCategories, spares, checklistItems,
     employees, approverMatrix, workOrders, calibrations,
     meta: { seededAt: new Date().toISOString(), currentUserId: "emp-arjun" },
   };
@@ -314,7 +305,7 @@ const Store = {
   },
 
   checklistFor(equipmentId) {
-    return this.all("checklistMapping").filter((m) => m.equipmentId === equipmentId).map((m) => this.find("checklistItems", m.checklistItemId)).filter(Boolean);
+    return this.all("checklistItems").filter((i) => i.equipmentId === equipmentId);
   },
 
   equipmentPath(equipmentId) {

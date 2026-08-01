@@ -10,6 +10,15 @@
     wireCrudPage(container, { collection: "companyCodes", fields, title: "Company Code" });
   };
 
+  window.Pages["/org/departments"] = function (container) {
+    const fields = [
+      { key: "code", label: "Department Code", required: true },
+      { key: "name", label: "Department Name", required: true },
+    ];
+    container.innerHTML = renderCrudPage({ title: "Department Master", subtitle: "Departments employees belong to.", collection: "departments", fields, icon: "briefcase" });
+    wireCrudPage(container, { collection: "departments", fields, title: "Department" });
+  };
+
   window.Pages["/org/plants"] = function (container) {
     const ccOptions = Store.all("companyCodes").map((c) => ({ value: c.id, label: `${c.code} — ${c.name}` }));
     const fields = [
@@ -31,7 +40,7 @@
       container.innerHTML = `
         <div class="ac-page-header">
           <div>
-            <h1>${icon("mappin", 22)} Locations <span class="ac-badge ac-badge--info" style="margin-left:8px;">4-Level Hierarchy</span></h1>
+            <h1>${iconChip("mappin", 20, 34)} Locations <span class="ac-badge ac-badge--info" style="margin-left:8px;">4-Level Hierarchy</span></h1>
             <p class="ac-page-subtitle">Site → Building → Floor → Room/Cubicle. Equipment Master links to Room-level locations.</p>
           </div>
           <button class="ac-btn ac-btn--primary" id="btn-add-loc">${icon("plus", 16)} Add Location</button>
@@ -79,13 +88,12 @@
       ];
       const overlay = openModal(record ? "Edit Location" : "New Location", `
         <form id="loc-form"><div class="ac-form-grid">${fieldFormHtml(fields, record || {})}</div>
-        <div class="ac-modal__footer"><button type="button" class="ac-btn ac-btn--secondary" data-close-modal>Cancel</button><button type="submit" class="ac-btn ac-btn--primary">${icon("save",16)} Save</button></div></form>`);
-      overlay.querySelector("[data-close-modal]").addEventListener("click", closeModal);
+        <div class="ac-modal__footer"><button type="button" class="ac-btn ac-btn--secondary" data-close-modal>Cancel</button><button type="submit" class="ac-btn ac-btn--primary">${icon("save",16)} ${record ? "Update" : "Create"}</button></div></form>`);
       overlay.querySelector("#loc-form").addEventListener("submit", (e) => {
         e.preventDefault();
         const data = readForm(e.target, fields);
         if (record) Store.update("locations", record.id, data); else Store.insert("locations", data);
-        closeModal(); toast("Location saved", "success"); render();
+        closeModal(); successAlert(record ? "Updated successfully." : "Created successfully."); render();
       });
     }
   };

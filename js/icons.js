@@ -72,4 +72,20 @@ function icon(name, size = 18, cssClass = "") {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="${cssClass}" aria-hidden="true">${path}</svg>`;
 }
 
+// ---- Colorful icon chips ----
+// Deterministic color per icon name (same icon always gets the same color) picked from a curated palette.
+const ICON_PALETTE = ["#2563EB", "#16A34A", "#D97706", "#DC2626", "#7C3AED", "#0D9488", "#DB2777", "#0891B2", "#CA8A04", "#4F46E5", "#059669", "#EA580C"];
+function iconColor(name) {
+  const key = String(name).toLowerCase();
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  return ICON_PALETTE[hash % ICON_PALETTE.length];
+}
+function iconChip(name, size = 16, chipSize = 30) {
+  const color = iconColor(name);
+  return `<span class="ac-icon-chip" style="width:${chipSize}px;height:${chipSize}px;background:${color}22;color:${color};">${icon(name, size)}</span>`;
+}
+
 window.icon = icon;
+window.iconColor = iconColor;
+window.iconChip = iconChip;
