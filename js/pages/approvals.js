@@ -1,7 +1,7 @@
 (function () {
   function eqName(id) { return Store.find("equipment", id)?.name || "—"; }
   function empName(id) { return Store.find("employees", id)?.name || "—"; }
-  function freqLabel(v) { return FREQUENCY_OPTIONS.find((f) => f.value === v)?.label || v || "—"; }
+  function freqLabel(v) { return (v || v === 0) ? `${v} day(s)` : "—"; }
 
   window.Pages["/approvals"] = function (container) {
     render();

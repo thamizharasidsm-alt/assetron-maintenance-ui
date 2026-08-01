@@ -15,20 +15,11 @@ function today(offsetDays = 0) {
   return d.toISOString().slice(0, 10);
 }
 
-const FREQUENCY_OPTIONS = [
-  { value: "Monthly", label: "Monthly", days: 30 },
-  { value: "BiMonthly", label: "Bi-Monthly", days: 60 },
-  { value: "Quarterly", label: "Quarterly", days: 91 },
-  { value: "HalfYearly", label: "Half-Yearly", days: 182 },
-  { value: "Yearly", label: "Yearly", days: 365 },
-  { value: "Custom", label: "Custom (days)", days: null },
-];
-
-function computeNextDate(performedDate, frequency, customDays) {
+// Next scheduled date is simply performedDate + N days — day 1 is the day
+// after performedDate ("tomorrow"), day N is N days after performedDate.
+function computeNextDate(performedDate, days) {
   const base = new Date(performedDate);
-  const freq = FREQUENCY_OPTIONS.find((f) => f.value === frequency);
-  const days = frequency === "Custom" ? Number(customDays || 0) : (freq ? freq.days : 0);
-  base.setDate(base.getDate() + days);
+  base.setDate(base.getDate() + Number(days || 0));
   return base.toISOString().slice(0, 10);
 }
 
@@ -37,6 +28,7 @@ function seedData() {
     { id: "dept-fac", code: "FAC", name: "Facilities" },
     { id: "dept-eng", code: "ENG", name: "Engineering" },
     { id: "dept-qa", code: "QA", name: "Quality Assurance" },
+    { id: "dept-gen", code: "GEN", name: "General" },
   ];
 
   const companyCodes = [
@@ -71,30 +63,23 @@ function seedData() {
   ];
 
   const equipment = [
-    { id: "eq-ac1", code: "EQ-AC-001", name: "Split AC Unit - 1.5 Ton", groupId: "grp-hvac", parentEquipmentId: null, assetRef: "AST-300010", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDefault: "Quarterly", status: "Active" },
-    { id: "eq-ac1-comp", code: "EQ-AC-001-C", name: "AC Compressor", groupId: "grp-hvac", parentEquipmentId: "eq-ac1", assetRef: "-", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDefault: "Yearly", status: "Active" },
-    { id: "eq-ac1-cond", code: "EQ-AC-001-CC", name: "AC Condenser Coil", groupId: "grp-hvac", parentEquipmentId: "eq-ac1", assetRef: "-", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDefault: "HalfYearly", status: "Active" },
-    { id: "eq-dg1", code: "EQ-DG-001", name: "Diesel Generator 125 KVA", groupId: "grp-elec", parentEquipmentId: null, assetRef: "AST-400010", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-terrace-dg-room", frequencyDefault: "Monthly", status: "Active" },
-    { id: "eq-pump1", code: "EQ-PUMP-001", name: "Centrifugal Pump - Cooling Tower", groupId: "grp-mech", parentEquipmentId: null, assetRef: "AST-500001", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-terrace-cool-room", frequencyDefault: "Quarterly", status: "Active" },
-    { id: "eq-gauge1", code: "EQ-INST-001", name: "Digital Pressure Gauge", groupId: "grp-instr", parentEquipmentId: null, assetRef: "AST-600002", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-store-room", frequencyDefault: "Yearly", status: "Active" },
-  ];
-
-  const spareCategories = [
-    { id: "spc-hvac", code: "HVAC", name: "HVAC" },
-    { id: "spc-elec", code: "ELEC", name: "Electrical" },
-    { id: "spc-mech", code: "MECH", name: "Mechanical" },
-    { id: "spc-gen", code: "GEN", name: "General" },
+    { id: "eq-ac1", code: "EQ-AC-001", name: "Split AC Unit - 1.5 Ton", groupId: "grp-hvac", categoryId: "dept-fac", parentEquipmentId: null, assetRef: "AST-300010", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDays: 91, status: "Active" },
+    { id: "eq-ac1-comp", code: "EQ-AC-001-C", name: "AC Compressor", groupId: "grp-hvac", categoryId: "dept-fac", parentEquipmentId: "eq-ac1", assetRef: "-", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDays: 365, status: "Active" },
+    { id: "eq-ac1-cond", code: "EQ-AC-001-CC", name: "AC Condenser Coil", groupId: "grp-hvac", categoryId: "dept-fac", parentEquipmentId: "eq-ac1", assetRef: "-", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-room-a302", frequencyDays: 182, status: "Active" },
+    { id: "eq-dg1", code: "EQ-DG-001", name: "Diesel Generator 125 KVA", groupId: "grp-elec", categoryId: "dept-eng", parentEquipmentId: null, assetRef: "AST-400010", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-terrace-dg-room", frequencyDays: 30, status: "Active" },
+    { id: "eq-pump1", code: "EQ-PUMP-001", name: "Centrifugal Pump - Cooling Tower", groupId: "grp-mech", categoryId: "dept-fac", parentEquipmentId: null, assetRef: "AST-500001", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-terrace-cool-room", frequencyDays: 91, status: "Active" },
+    { id: "eq-gauge1", code: "EQ-INST-001", name: "Digital Pressure Gauge", groupId: "grp-instr", categoryId: "dept-qa", parentEquipmentId: null, assetRef: "AST-600002", companyCodeId: "cc1", plantId: "pl1", locationId: "loc-store-room", frequencyDays: 365, status: "Active" },
   ];
 
   const spares = [
-    { id: "sp1", code: "SP-0001", name: "Refrigerant Gas R32 (1kg)", uom: "CYL", categoryId: "spc-hvac" },
-    { id: "sp2", code: "SP-0002", name: "Air Filter - Standard", uom: "EA", categoryId: "spc-hvac" },
-    { id: "sp3", code: "SP-0003", name: "Capacitor 35uF", uom: "EA", categoryId: "spc-elec" },
-    { id: "sp4", code: "SP-0004", name: "Fan Belt", uom: "EA", categoryId: "spc-gen" },
-    { id: "sp5", code: "SP-0005", name: "Engine Oil 15W40 (5L)", uom: "CAN", categoryId: "spc-elec" },
-    { id: "sp6", code: "SP-0006", name: "Diesel Filter", uom: "EA", categoryId: "spc-elec" },
-    { id: "sp7", code: "SP-0007", name: "Pump Seal Kit", uom: "SET", categoryId: "spc-mech" },
-    { id: "sp8", code: "SP-0008", name: "Grease Cartridge", uom: "EA", categoryId: "spc-gen" },
+    { id: "sp1", code: "SP-0001", name: "Refrigerant Gas R32 (1kg)", uom: "CYL", categoryId: "dept-fac" },
+    { id: "sp2", code: "SP-0002", name: "Air Filter - Standard", uom: "EA", categoryId: "dept-fac" },
+    { id: "sp3", code: "SP-0003", name: "Capacitor 35uF", uom: "EA", categoryId: "dept-eng" },
+    { id: "sp4", code: "SP-0004", name: "Fan Belt", uom: "EA", categoryId: "dept-gen" },
+    { id: "sp5", code: "SP-0005", name: "Engine Oil 15W40 (5L)", uom: "CAN", categoryId: "dept-eng" },
+    { id: "sp6", code: "SP-0006", name: "Diesel Filter", uom: "EA", categoryId: "dept-eng" },
+    { id: "sp7", code: "SP-0007", name: "Pump Seal Kit", uom: "SET", categoryId: "dept-fac" },
+    { id: "sp8", code: "SP-0008", name: "Grease Cartridge", uom: "EA", categoryId: "dept-gen" },
   ];
 
   const checklistItems = [
@@ -138,7 +123,7 @@ function seedData() {
     {
       id: "wo1", docNumber: "WO-2026-000001", equipmentId: "eq-ac1", performedDate: "2026-04-15", performedById: "emp-arjun",
       spares: [{ spareId: "sp2", qty: 1, remarks: "Filter was clogged with dust" }],
-      frequency: "Quarterly", customDays: null, nextScheduledDate: "2026-07-15",
+      frequency: 91, nextScheduledDate: "2026-07-15",
       checklist: [
         { checklistItemId: "cl1", performed: "Yes", remarks: "Within range" },
         { checklistItemId: "cl2", performed: "Yes", remarks: "Replaced" },
@@ -160,7 +145,7 @@ function seedData() {
     {
       id: "wo2", docNumber: "WO-2026-000002", equipmentId: "eq-dg1", performedDate: "2026-07-20", performedById: "emp-priya",
       spares: [{ spareId: "sp5", qty: 1, remarks: "Topped up engine oil" }, { spareId: "sp6", qty: 1, remarks: "Replaced diesel filter" }],
-      frequency: "Monthly", customDays: null, nextScheduledDate: "2026-08-19",
+      frequency: 30, nextScheduledDate: "2026-08-19",
       checklist: [
         { checklistItemId: "cl6", performed: "Yes", remarks: "Topped up to full mark" },
         { checklistItemId: "cl7", performed: "Yes", remarks: "Clean, tightened" },
@@ -177,7 +162,7 @@ function seedData() {
     {
       id: "cal1", docNumber: "CAL-2026-000001", equipmentId: "eq-gauge1", performedDate: "2026-03-01", performedById: "emp-arjun",
       spares: [],
-      frequency: "Yearly", customDays: null, nextScheduledDate: "2027-03-01",
+      frequency: 365, nextScheduledDate: "2027-03-01",
       checklist: [
         { checklistItemId: "cl12", performed: "Yes", remarks: "Within ±1% tolerance" },
         { checklistItemId: "cl13", performed: "Yes", remarks: "Certificate valid till 2027-03-01" },
@@ -190,7 +175,7 @@ function seedData() {
 
   return {
     departments, companyCodes, plants, locations,
-    equipmentGroups, equipment, spareCategories, spares, checklistItems,
+    equipmentGroups, equipment, spares, checklistItems,
     employees, approverMatrix, workOrders, calibrations,
     meta: { seededAt: new Date().toISOString(), currentUserId: "emp-arjun" },
   };
@@ -322,5 +307,4 @@ const Store = {
 window.Store = Store;
 window.uid = uid;
 window.todayStr = today;
-window.FREQUENCY_OPTIONS = FREQUENCY_OPTIONS;
 window.computeNextDate = computeNextDate;

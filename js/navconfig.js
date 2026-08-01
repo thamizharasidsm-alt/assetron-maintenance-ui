@@ -20,7 +20,6 @@ const NAV_GROUPS = [
     items: [
       { route: "#/masters/equipment", label: "Equipment Master", icon: "grid" },
       { route: "#/masters/spares", label: "Spare Master", icon: "package" },
-      { route: "#/masters/spare-categories", label: "Spare Category Master", icon: "layers" },
       { route: "#/masters/employees", label: "Employee Master", icon: "users" },
       { route: "#/masters/approvers", label: "User Approver Master", icon: "usercheck" },
     ],

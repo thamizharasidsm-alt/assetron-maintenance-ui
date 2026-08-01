@@ -6,7 +6,6 @@
     { route: "#/org/locations", label: "Locations", icon: "mappin", collection: "locations" },
     { route: "#/masters/equipment", label: "Equipment Master", icon: "grid", collection: "equipment" },
     { route: "#/masters/spares", label: "Spare Master", icon: "package", collection: "spares" },
-    { route: "#/masters/spare-categories", label: "Spare Category Master", icon: "layers", collection: "spareCategories" },
     { route: "#/masters/employees", label: "Employee Master", icon: "users", collection: "employees" },
     { route: "#/masters/approvers", label: "User Approver Master", icon: "usercheck", collection: "approverMatrix" },
     { route: "#/workorder", label: "Work Order", icon: "settings", collection: "workOrders" },

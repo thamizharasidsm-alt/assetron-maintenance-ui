@@ -6,7 +6,7 @@
 function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, moduleIcon }) {
   function eqName(id) { return Store.find("equipment", id)?.name || "—"; }
   function empName(id) { return Store.find("employees", id)?.name || "—"; }
-  function freqLabel(v) { return FREQUENCY_OPTIONS.find((f) => f.value === v)?.label || v || "—"; }
+  function freqLabel(v) { return (v || v === 0) ? `${v} day(s)` : "—"; }
 
   // ---- List ----
   window.Pages[basePath] = function (container) {
@@ -72,12 +72,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
           <div class="ac-form-grid">
             <div class="ac-field"><label>Equipment *</label><select class="ac-select" id="f-equipment" ${readonlyAttr} required><option value="">Select…</option>${equipmentOptions}</select></div>
             <div class="ac-field"><label>Performed Date *</label><input class="ac-input" type="date" id="f-date" value="${record?.performedDate || todayStr()}" ${readonlyAttr} required/></div>
-            <div class="ac-field"><label>Frequency (for next PM)</label><select class="ac-select" id="f-freq" disabled required>
-              ${FREQUENCY_OPTIONS.map((f) => `<option value="${f.value}" ${record?.frequency === f.value ? "selected" : ""}>${f.label}</option>`).join("")}
-            </select><span class="ac-field__help">Set from the equipment's Default PM Frequency — not editable here.</span></div>
-            <div class="ac-field" id="f-customdays-wrap" style="display:${record?.frequency === "Custom" ? "flex" : "none"};">
-              <label>Custom Interval (days)</label><input class="ac-input" type="number" id="f-customdays" min="1" value="${record?.customDays || ""}" disabled/>
-            </div>
+            <div class="ac-field"><label>Frequency (Days)</label><input class="ac-input" type="number" id="f-freq" min="1" value="${record?.frequency ?? ""}" disabled required/><span class="ac-field__help">Set from the equipment's Default PM Frequency — not editable here.</span></div>
           </div>
           <div class="ac-info-box" style="margin-top:var(--ac-space-2);" id="last-performed-box"></div>
           <div class="ac-muted-text" style="margin-top:10px;">Next Scheduled Date: <strong id="next-sched-display">—</strong></div>
@@ -164,10 +159,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
       function refreshEquipmentDependent() {
         if (isNew) {
           const equipment = selectedEquipmentId ? Store.find("equipment", selectedEquipmentId) : null;
-          const freqEl = container.querySelector("#f-freq");
-          const customEl = container.querySelector("#f-customdays");
-          freqEl.value = equipment?.frequencyDefault || "";
-          if (equipment?.frequencyDefault === "Custom") customEl.value = equipment.customDaysDefault ?? "";
+          container.querySelector("#f-freq").value = equipment?.frequencyDays ?? "";
         }
 
         const lastBox = container.querySelector("#last-performed-box");
@@ -204,18 +196,15 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
       function updateNextScheduled() {
         const dateEl = container.querySelector("#f-date");
         const freqEl = container.querySelector("#f-freq");
-        const customEl = container.querySelector("#f-customdays");
-        container.querySelector("#f-customdays-wrap").style.display = freqEl.value === "Custom" ? "flex" : "none";
         const display = container.querySelector("#next-sched-display");
         if (dateEl.value && freqEl.value) {
-          display.textContent = fmtDate(computeNextDate(dateEl.value, freqEl.value, customEl.value));
+          display.textContent = fmtDate(computeNextDate(dateEl.value, freqEl.value));
         } else {
           display.textContent = "—";
         }
       }
       container.querySelector("#f-date").addEventListener("change", updateNextScheduled);
       container.querySelector("#f-freq").addEventListener("change", updateNextScheduled);
-      container.querySelector("#f-customdays")?.addEventListener("input", updateNextScheduled);
 
       // save handlers
       container.querySelector("#btn-save-draft")?.addEventListener("click", () => save("Draft"));
@@ -224,8 +213,7 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
       function save(targetStatus) {
         const eqId = container.querySelector("#f-equipment").value;
         const performedDate = container.querySelector("#f-date").value;
-        const frequency = container.querySelector("#f-freq").value;
-        const customDays = container.querySelector("#f-customdays")?.value || null;
+        const frequency = Number(container.querySelector("#f-freq").value);
         if (!eqId || !performedDate || !frequency) { toast("Equipment, Performed Date and Frequency are required", "destructive"); return; }
 
         const spares = [...sparesHost.querySelectorAll("[data-spare-row]")].map((row) => ({
@@ -247,12 +235,12 @@ function buildTransactionModule({ collection, docPrefix, moduleLabel, basePath, 
 
         const equipment = Store.find("equipment", eqId);
         const approverMap = Store.approverFor(currentUser.id, equipment?.groupId);
-        const nextScheduledDate = computeNextDate(performedDate, frequency, customDays);
+        const nextScheduledDate = computeNextDate(performedDate, frequency);
         const nowIso = new Date().toISOString();
 
         const payload = {
           equipmentId: eqId, performedDate, performedById: record?.performedById || currentUser.id,
-          spares, frequency, customDays: frequency === "Custom" ? Number(customDays) : null, nextScheduledDate,
+          spares, frequency, nextScheduledDate,
           checklist, qna, status: targetStatus,
           approverId: approverMap ? approverMap.approverEmployeeId : (record?.approverId || null),
           approvalRemarks: targetStatus === "PendingApproval" ? "" : (record?.approvalRemarks || ""),

@@ -2,7 +2,7 @@
   function eqName(id) { return Store.find("equipment", id)?.name || "—"; }
   function empName(id) { return Store.find("employees", id)?.name || "—"; }
   function deptName(performedById) { return Store.find("departments", Store.find("employees", performedById)?.departmentId)?.name || "—"; }
-  function freqLabel(v) { return FREQUENCY_OPTIONS.find((f) => f.value === v)?.label || v || "—"; }
+  function freqLabel(v) { return (v || v === 0) ? `${v} day(s)` : "—"; }
 
   function exportCsv(filename, rows, headers) {
     const csv = [headers.join(","), ...rows.map((r) => r.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(","))].join("\n");
@@ -43,7 +43,7 @@
     render();
     function render() {
       const rows = buildRows();
-      const categoryOptions = Store.all("spareCategories").map((c) => `<option value="${c.id}" ${c.id === categoryId ? "selected" : ""}>${c.name}</option>`).join("");
+      const categoryOptions = Store.all("departments").map((c) => `<option value="${c.id}" ${c.id === categoryId ? "selected" : ""}>${c.name}</option>`).join("");
       const departmentOptions = Store.all("departments").map((d) => `<option value="${d.id}" ${d.id === departmentId ? "selected" : ""}>${d.name}</option>`).join("");
       container.innerHTML = `
         <div class="ac-page-header"><div><h1>${iconChip("barchart", 20, 34)} Range Report</h1><p class="ac-page-subtitle">Transactions performed within a date range, across Work Order and/or Calibration. Optionally filter to transactions that used a spare from a given category or belong to a department.</p></div>
@@ -57,8 +57,8 @@
               <label style="display:flex;align-items:center;gap:6px;font-weight:500;font-size:13.5px;"><input type="checkbox" id="f-mod-cal" ${modules.calibrations ? "checked" : ""}/> Calibration</label>
             </div>
           </div>
-          <div class="ac-filterbar__field"><label>Spare Category</label><select class="ac-select" id="f-category"><option value="">All categories</option>${categoryOptions}</select></div>
-          <div class="ac-filterbar__field"><label>Department</label><select class="ac-select" id="f-department"><option value="">All departments</option>${departmentOptions}</select></div>
+          <div class="ac-filterbar__field"><label>Spare Category (Department)</label><select class="ac-select" id="f-category"><option value="">All categories</option>${categoryOptions}</select></div>
+          <div class="ac-filterbar__field"><label>Performed By Department</label><select class="ac-select" id="f-department"><option value="">All departments</option>${departmentOptions}</select></div>
           <button class="ac-btn ac-btn--primary" id="btn-apply">${icon("search", 16)} Apply</button>
         </div>
         <div class="ac-table-wrap"><table class="ac-table">
