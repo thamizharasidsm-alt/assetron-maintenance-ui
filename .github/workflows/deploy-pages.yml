@@ -1,0 +1,37 @@
+name: Deploy static site to public Pages repo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source (private) repo
+        uses: actions/checkout@v4
+
+      # Only these three paths make up the actual deployable site.
+      # Everything else (README, .claude/, workflow files, git metadata,
+      # etc.) stays behind in the private repo.
+      - name: Assemble deploy folder
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -r css _site/css
+          cp -r js _site/js
+
+      - name: Publish to public hosting repo
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: thamizharasidsm-alt/assetron-maintenance-site
+          publish_branch: main
+          publish_dir: _site
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: "Deploy: ${{ github.event.head_commit.message }}"
